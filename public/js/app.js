@@ -1,6 +1,6 @@
 'use strict';
 
-$(document).foundation();
+// $(document).foundation();
 
 var eventpool = angular.module('eventpool', []);
 
