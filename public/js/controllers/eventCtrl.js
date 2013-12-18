@@ -1,22 +1,33 @@
 'use strict';
 
-eventpool.controller('EventCtrl', function EventCtrl($scope, $http){
-	$scope.title = "Howdy, Partner";
+eventpool.controller('EventCtrl', function EventCtrl($scope, eventpoolStorage){
+	$scope.title = "Hi Brian!";
 	$scope.dates = {};
-	$http({method: "get", url: "/controller/?action=load"}).success(function(data){
-		console.log(data);
-		$scope.data = data;
-	})
+
+	window.setInterval(function(){
+			eventpoolStorage.getEventList().success(function(data){
+			$scope.data = data;
+		});
+	}, 1000);
+
 
 	$scope.editing = null;
+	$scope.editingValue = null;
 
 	$scope.claim = function(key){
-		console.log(key);
 		$scope.editing = key;
 	}
 
-	$scope.update = function(key){
-		console.log(key);
+	$scope.update = function(key, value){
+
+		eventpoolStorage.submitEvent({
+			"date": key,
+			"value": value
+		}).success(function(data){
+			// console.log(data);
+			$scope.data = data;
+		});
+
 		$scope.reset();
 	}
 

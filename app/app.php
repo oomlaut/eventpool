@@ -14,15 +14,18 @@ class App {
 	private $debug = array();
 
 	private $config = null;
+	private $dates = null;
 
 	private $data = null;
 
 
-	public function __construct(){
-		$this->debug["initialized"] = true;
-		$this->data = json_decode('{"dates": []}');
+	public function debug($key, $value){
+		$this->debug[$key] = $value;
+	}
 
+	public function __construct(){
 		$this->config = R::dispense('config');
+		$this->dates = R::dispense('dates');
 	}
 
 
@@ -30,21 +33,26 @@ class App {
 		R::close();
 	}
 
-	public function setup($key, $value){
+	public function config($key, $value){
 		if(empty($key) || empty($value)):
 			die("invalid key/value pairs");
 		endif;
 
-		$this->config->key = $key;
-		$this->config->value = $value;
+		$row = R::findOne('config', ' key = ? ', array( $key ));
 
-		$this->debug("config", $this->config);
+		// $this->debug('row', $row);
 
-		return R::store($this->config);
-	}
+		if(count($row) === 0):
+			$this->config->key = $key;
+			$this->config->value = $value;
+			R::store($this->config);
+		else:
+			$item = R::load('config', $row->id);
+			$item->value = $value;
+			R::store($item);
+		endif;
 
-	public function debug($key, $value){
-		$this->debug[$key] = $value;
+		return $this;
 	}
 
 	public function __toString(){
@@ -68,10 +76,13 @@ class App {
 		return $t * 1000;
 	}
 
+	private function timeUnformat($t){
+		return $t / 1000;
+	}
+
 	private function generateRange($date){
 
-		$time = strtotime($date);
-		$info = getdate($time);
+		$info = getdate(strtotime($date));
 
 		// $this->debug('info', $info);
 
@@ -98,14 +109,15 @@ class App {
 		$diff = floor(($endtime - $starttime) / (60*60*24));
 
 
-		$this->debug("time", array("start" => $starttime, "end" => $endtime, "diff", $diff));
+		// $this->debug("time", array("start" => $starttime, "end" => $endtime, "diff", $diff));
 
 		for($i = 0; $i < $diff; $i++){
-			$this->data->dates[$this->timeFormat($starttime)] = "";
+			$index = $this->timeFormat($starttime);
+			$row = R::findOne('dates', ' date = ? ', array($index));
+			$claimedBy = (count($row) === 0 ) ? "" : $row->value;
+			$this->data->dates[$index] = $claimedBy;
 			$starttime += (60*60*24);
 		}
-
-		$this->debug('data', $this->data);
 
 		return $this;
 	}
@@ -113,20 +125,42 @@ class App {
 	public function fetch(){
 		$row = R::findOne('config', ' key = ? ', array( 'date' ));
 		$date = $row->value;
+
+
 		$this->generateRange($date);
+
 		$this->data->selected = $this->timeFormat(strtotime($date));
 		return $this;
 	}
 
 	public function toJSON(){
 		if(headers_sent()):
-			die("unable to display json format");
+			die("unable to display json content-type");
 		else:
 			header("Content-type:application/json");
 			echo json_encode($this->data);
 			exit;
 		endif;
 
+		return $this;
+	}
+
+	public function claim($date, $value){
+		$row = R::findOne('dates', ' date = ? ', array( $this->timeUnformat($date) ) );
+
+		if(count($row) === 0):
+			$this->dates->date = $date;
+			$this->dates->value = $value;
+			$store = R::store($this->dates);
+		else:
+			// do nothing.
+		endif;
+
+		return $this;
+	}
+
+	private function reset(){
+		R::nuke();
 		return $this;
 	}
 }
