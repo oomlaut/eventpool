@@ -18,7 +18,9 @@ class App {
 
 	private $data = null;
 
-
+	/**
+	 * store key, value pairs into debug array
+	 */
 	public function debug($key, $value){
 		$this->debug[$key] = $value;
 	}
@@ -58,6 +60,9 @@ class App {
 		return $output;
 	}
 
+	/**
+	 *
+	 */
 	public function config($key, $value){
 		if(empty($key) || empty($value)):
 			die("invalid key/value pairs");
@@ -80,14 +85,23 @@ class App {
 		return $this;
 	}
 
+	/**
+	 *
+	 */
 	private function timeFormat($t){
 		return $t * 1000;
 	}
 
+	/**
+	 *
+	 */
 	private function timeUnformat($t){
 		return $t / 1000;
 	}
 
+	/**
+	 *
+	 */
 	private function generateRange($date){
 
 		$info = getdate(strtotime($date));
@@ -130,6 +144,9 @@ class App {
 		return $this;
 	}
 
+	/**
+	 *
+	 */
 	public function fetch(){
 		$row = R::findOne('config', ' key = ? ', array( 'date' ));
 		$date = $row->value;
@@ -141,6 +158,9 @@ class App {
 		return $this;
 	}
 
+	/**
+	 *
+	 */
 	public function toJSON(){
 		if(headers_sent()):
 			die("unable to display json content-type");
@@ -153,6 +173,9 @@ class App {
 		return $this;
 	}
 
+	/**
+	 *
+	 */
 	public function claim($date, $value){
 		$row = R::findOne('dates', ' date = ? ', array( $this->timeUnformat($date) ) );
 
@@ -167,6 +190,9 @@ class App {
 		return $this;
 	}
 
+	/**
+	 *
+	 */
 	private function reset(){
 		R::nuke();
 		return $this;
