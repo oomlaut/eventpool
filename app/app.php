@@ -23,38 +23,24 @@ class App {
 		$this->debug[$key] = $value;
 	}
 
+	/**
+	 * instantiation magic method
+	 */
 	public function __construct(){
 		$this->config = R::dispense('config');
 		$this->dates = R::dispense('dates');
 	}
 
-
+	/**
+	 * destruction magie method
+	 */
 	public function __destroy(){
 		R::close();
 	}
 
-	public function config($key, $value){
-		if(empty($key) || empty($value)):
-			die("invalid key/value pairs");
-		endif;
-
-		$row = R::findOne('config', ' key = ? ', array( $key ));
-
-		// $this->debug('row', $row);
-
-		if(count($row) === 0):
-			$this->config->key = $key;
-			$this->config->value = $value;
-			R::store($this->config);
-		else:
-			$item = R::load('config', $row->id);
-			$item->value = $value;
-			R::store($item);
-		endif;
-
-		return $this;
-	}
-
+	/**
+	 * magic method called when `echo $instance` is referenced
+	 */
 	public function __toString(){
 		ob_start();
 		if(!headers_sent()):
@@ -70,6 +56,28 @@ class App {
 		ob_end_clean();
 
 		return $output;
+	}
+
+	public function config($key, $value){
+		if(empty($key) || empty($value)):
+			die("invalid key/value pairs");
+		endif;
+
+		// TODO: abstract db call into helper private method
+
+		$row = R::findOne('config', ' key = ? ', array( $key ));
+
+		if(count($row) === 0):
+			$this->config->key = $key;
+			$this->config->value = $value;
+			R::store($this->config);
+		else:
+			$item = R::load('config', $row->id);
+			$item->value = $value;
+			R::store($item);
+		endif;
+
+		return $this;
 	}
 
 	private function timeFormat($t){
