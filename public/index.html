@@ -4,34 +4,46 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Event Pool</title>
+		<link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="css/app.css" />
 		<script src="bower_components/modernizr/modernizr.js"></script>
 		<script src="bower_components/angular/angular.min.js"></script>
 		<!-- script src="bower_components/angular-resource/angular-resource.min.js"></script -->
 	</head>
-	<body>
+	<body ng-controller="EventCtrl">
 
 		<!-- angular pattern -->
-		<section id="eventapp" ng-controller="EventCtrl">
-			<h1>{{title}}</h1>
-				<div ng-repeat="(key , value) in data.dates | date:'YYYY-mm-dd'">
-					<div class="row" ng-if="value !== '' && editing !== key" ng-include='"claimed.html"'></div>
-					<div class="row" ng-if="value == '' || editing === key" ng-include='"available.html"'></div>
+		<h1>{{title}}</h1>
+		<div class="row heading" ng-if="data.dates">
+			<div class="tile"><span>Sunday</span></div>
+			<div class="tile"><span>Monday</span></div>
+			<div class="tile"><span>Tuesday</span></div>
+			<div class="tile"><span>Wednesday</span></div>
+			<div class="tile"><span>Thursday</span></div>
+			<div class="tile"><span>Friday</span></div>
+			<div class="tile"><span>Saturday</span></div>
+		</div>
+		<section id="eventapp" class="row offset-{{data.offset}}" ng-if="data.dates">
+			<div class="tile" ng-repeat="(key , value) in data.dates | date:'YYYY-mm-dd'">
+				<div ng-class="(key == data.selected ) ? pos : neg " data-key="{{key}}">
+					<span class="date">{{key | date:'MMMM d'}}</span>
+					<div class="state claimed" ng-if="value !== '' && editing !== key" ng-include='"claimed.html"'></div>
+					<div class="state available" ng-if="value == '' || editing === key" ng-include='"available.html"'></div>
 				</div>
+			</div>
 		</section>
 
 		<!-- ** Available Date View Template
 		      *
 		-->
 		<script type="text/ng-template" id="available.html">
-			<div class="small-4 columns">{{key | date:'MMMM d'}}</div>
-			<div class="small-8 columns row" ng-if="editing == key">
-				<input type="text" class="small-6 columns left" ng-model="editingValue">
-				<button type="button" class="button tiny small-3 columns" ng-click="update(key, editingValue)">Submit</button>
-				<button type="button" class="button tiny small-3 columns" ng-click="reset()">Cancel</button>
+			<div ng-if="editing == key">
+				<input type="text" class="tiny" ng-model="editingValue" maxlength="required" autofocus>
+				<button type="button" class="button tiny success" ng-click="update(key, editingValue)"><i class="fa fa-check"></i></button>
+				<button type="button" class="button tiny alert" ng-click="reset()"><i class="fa fa-times"></i></button>
 			</div>
-			<span class="small-8 columns" ng-if="editing !== key">
-				<button type="button" class="button tiny" ng-click="claim(key)">Claim</button>
+			<span ng-if="editing !== key">
+				<button type="button" class="button tiny" ng-click="claim(key)"><i class="fa fa-pencil"></i></button>
 			</span>
 		</script>
 
@@ -39,12 +51,7 @@
 		      *
 		-->
 		<script type="text/ng-template" id="claimed.html">
-			<div class="small-6 columns">
-				{{key | date:'MMMM d'}}
-			</div>
-			<div class="small-6 columns">
-				{{value}}
-			</div>
+			{{value}}
 		</script>
 <!--
 		<script src="bower_components/jquery/jquery.js"></script>

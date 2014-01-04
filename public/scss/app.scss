@@ -1,2 +1,92 @@
 @import "settings";
 @import "foundation";
+
+h1{
+	text-align:center;
+}
+
+.heading{
+	span{
+		display:block;
+		padding:.5em;
+	}
+}
+
+#eventapp{
+	&.offset-1{
+		.tile:first-child{
+			margin-left: 14.2857143%;
+		}
+	}
+	&.offset-2{
+		.tile:first-child{
+			margin-left:28.5714286%;
+		}
+	}
+	&.offset-3{
+		.tile:first-child{
+			margin-left:42.8571429%;
+		}
+	}
+	&.offset-4{
+		.tile:first-child{
+			margin-left:57.1428571%;
+		}
+	}
+	&.offset-5{
+		.tile:first-child{
+			margin-left:71.4285714%;
+		}
+	}
+	&.offset-6{
+		.tile:first-child{
+			margin-left:85.7142857%;
+		}
+	}
+}
+
+.tile{
+
+	float:left;
+	outline:1px solid #ccc;
+	width:14.2857143%;
+
+	.date{
+		background:#efefef;
+		border-bottom:1px solid #ccc;
+		font-size:.75em;
+		left:0;
+		margin:0;
+		padding:.5em;
+		position: absolute;
+		top:0;
+		width:100%;
+	}
+	.content{
+		padding-top:1.5em;
+		padding-bottom:1em;
+		position: relative;
+	}
+	.selected{
+		background:#fcc;
+	}
+	.state{
+		text-align: center;
+		padding-top:1em;
+		min-height: 100px;
+	}
+	.available{
+		input{
+			width:75%;
+			margin: 0 auto 1em;
+			text-align:center;
+		}
+		button{
+			margin-bottom:0;
+		}
+	}
+	.claimed{
+		font-size:1.25em;
+		font-weight:600;
+	}
+}
