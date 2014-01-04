@@ -124,12 +124,12 @@ class App {
 			$next['mon']++;
 		endif;
 
-
 		$starttime = strtotime($prev['year'] . '-' . $prev['mon'] . '-' . $prev['mday']);
 		$endtime = strtotime($next['year'] . '-' . $next['mon'] . '-' . $next['mday']);
 
 		$diff = floor(($endtime - $starttime) / (60*60*24));
 
+		$this->config['offset'] = getdate($starttime)['wday'];
 
 		// $this->debug("time", array("start" => $starttime, "end" => $endtime, "diff", $diff));
 
@@ -154,6 +154,7 @@ class App {
 
 		$this->generateRange($date);
 
+		$this->data->offset = $this->config['offset'];
 		$this->data->selected = $this->timeFormat(strtotime($date));
 		return $this;
 	}
