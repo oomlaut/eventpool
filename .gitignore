@@ -1,7 +1,7 @@
 *.DS_Store
 
-/public/css/*
-/public/bower_components/*
-/public/node_modules/*
+# Node Packages
+node_modules/*
 
+# SQLite data
 /data/*.sqlite
